@@ -2,25 +2,26 @@
 Proyecto final EDII
 
 Esquema:
-clase Empleado:
--DNI
--Nombre
--Cargo
--Edad
--Sueldo
+
+clase Empleado: <br>
+-DNI <br>
+-Nombre <br>
+-Cargo <br>
+-Edad <br>
+-Sueldo <br>
 -Fecha de contratación
 
-+getters y setters de cada variable
-+opearadores relacionales
-+operadores de entrada y salida
++getters y setters de cada variable <br>
++opearadores relacionales <br>
++operadores de entrada y salida 
 
-clase EmpleadoFile:
--listaEmpleados std::list
--listaDisponibles std::list
--variables para almacenar nombres de archivos y citar en lectura y escritura
-+Agregar
-+Eliminar 
-+Buscar por DNI
+clase EmpleadoFile: <br>
+-listaEmpleados std::list <br>
+-listaDisponibles std::list <br>
+-variables para almacenar nombres de archivos y citar en lectura y escritura <br>
++Agregar<br>
++Eliminar <br>
++Buscar por DNI <br>
 +Generar lista de disponibles?
 
 Main:
