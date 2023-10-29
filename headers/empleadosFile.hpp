@@ -38,6 +38,10 @@ public:
             iss >> empleadoAux;
 
             if (dni == empleadoAux.getDni()) {
+                if(empleadoAux.getDni()[0] == '*'){
+                    cout<<"Eliminado lógicamente"<<'\n';
+                    break;
+                }
                 line[0] = '*';
                 iss.str(line);
             }
