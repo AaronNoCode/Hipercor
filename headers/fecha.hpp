@@ -72,4 +72,4 @@ public:
 
     friend class Empleado;
 };
-#endif
+#endif //FECHA_HPP
