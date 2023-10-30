@@ -27,8 +27,6 @@ public:
     void delData(string dni) {
         fstream fs(fileDir, ios::in | ios::out);
         string line;
-        int index = 0;
-        bool empleadosListUpdated = false;
         if (!fs.is_open())
             throw ios::failure("Archivo no encontrado");
         ofstream ofs(auxDir, ios::out | ios::trunc);
@@ -39,19 +37,40 @@ public:
 
             if (dni == empleadoAux.getDni()) {
                 if(empleadoAux.getDni()[0] == '*'){
-                    cout<<"Eliminado lógicamente"<<'\n';
+                    cout<<"Ya está eliminado lógicamente"<<'\n';
                     break;
+                }else{
+                    line[0] = '*';
+                    cout<<empleadoAux.getDni()<<" Eliminado lógicamente"<<'\n';
                 }
-                line[0] = '*';
                 iss.str(line);
             }
             ofs << line <<'\n';
         }
         fs.close();
         ofs.close();
+        // AUX.txt se convierte en el archivo principal
+        remove(fileDir.c_str());
+        rename("backups/AUX.txt", fileDir.c_str());
     }
-    void findDataByDni(){
-
+    void findDataByDni(string dni){
+        int index = 0; //0
+        for (auto const &iterator : empleadosList){
+            if(iterator.getDni() == dni){
+                string line;
+                ifstream fs(fileDir,ios::in);
+                do{
+                    getline(fs,line,'\n');
+                    index--;
+                }while(index >= 0);
+                if (line[0] == '*')
+                    cout<<"Registro borrado lógico"<<'\n';
+                else
+                    cout<<line<<'\n';
+            }else {
+                index++;
+            }
+        }
     }
     void listToFile(){
         ofstream ofs(fileDir, ios::out | ios::trunc);

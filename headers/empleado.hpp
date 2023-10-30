@@ -24,7 +24,7 @@ private:
     Fecha fechaDeContratacion;
     map<short,char> dniCanon;
 public:
-    Empleado(string &dni, string &nombre, string &cargo, short edad, float sueldo,Fecha fechaDeContratacion){
+    Empleado(string dni, string nombre, string cargo, short edad, float sueldo,Fecha fechaDeContratacion){
         this->dni = generateDni(dni);
         this->nombre = nombre;
         this->cargo = cargo;
