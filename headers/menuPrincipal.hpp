@@ -11,7 +11,7 @@ using namespace std;
 /* Estas dos funcione son estáticas porque no necesitan acceder a ningún atributo de la clase
   y las dos funciones que las utilizan precisan que sean estáticas */
 static bool isNumericOrPointChar(char c){
-    return isalpha(c) || c=='.';
+    return isdigit(c) || c=='.';
 }
 static bool isAlphabethicCharacterOrSpace(char c){
     return isalpha(c) || isspace(c);
@@ -41,6 +41,11 @@ private:
 public:
     MenuPrincipal(){
         // Se inicializa a cero por buena praxis (no es bueno tener variables sin inicializar)
+        /* No es posible hardcodear las opciones ya que se cargan los dni con un caracter nulo al final
+           y no se puede comparar con un dni puesto a mano
+          empleadosFile.addData(Empleado("12345678A","Juan","Gerente",25,1000,Fecha(1,1,2020)));
+          empleadosFile.addData(Empleado("87654321B","Pedro","Cajero",20,500,Fecha(1,1,2020)));
+          empleadosFile.addData(Empleado("12345678C","Pablo","Cajero",20,500,Fecha(1,1,2020))); */
         opcion = 0;
             do{
                 // Se limpia la consola cada vuelta
@@ -55,7 +60,7 @@ public:
                   para guardar el nombre del empleado y hacerlo más estético a la hora de capturar */
                 string strAux, nombreEmpleadoAlta;
                 // Auxiliares para capturar la fecha de contratación y hacer comprobaciones
-                int diaAux,mesAux,anioAux;
+                int diaAux,mesAux,anioAux,numAux;
                 // Bool exclusivo para checar año bisiesto y días de cada mes (que la fecha sea válida conforme al calendario)
                 bool valid = false;
                 // Switch para cada opción
@@ -66,17 +71,20 @@ public:
                         do {
                             // Se captura el DNI en el string auxiliar
                             cin >> strAux;
+                            cin.ignore();
                             if (strAux.length() != 8)
                                 cout << "Longitud inválida, intente de nuevo" <<'\n'<<"->";
                             else if (!isNumeric(strAux))
                                 cout << "Debe contener solamente caracteres numéricos, intente de nuevo"<<'\n'<<"->";
+                            else if(strAux.empty())
+                                cout<<"No puede dejar el DNI en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(strAux.length() != 8 || !isNumeric(strAux));
                         emp.setDni(strAux);
 
                         //Captura de nombre
                         cout << "Ingrese nombre incluyendo nombres y apellidos" << '\n' << "->";
                         do{
-                            cin >> strAux;
+                            getline(cin,strAux,'\n');
                             if (!isAlphabeticOrSpace(strAux))
                                 cout<<"No se permiten caracteres numéricos, intente de nuevo"<<'\n'<<"->";
                             else if (strAux.empty())
@@ -88,23 +96,26 @@ public:
                         //Captura de cargo
                         cout << "Ingrese el cargo de " << nombreEmpleadoAlta << '\n' << "->";
                         do{
-                            cin >> strAux;
+                            getline(cin,strAux,'\n');
                             if (!isAlphabeticOrSpace(strAux))
                                 cout<<"No se permiten caracteres numéricos, intente de nuevo"<<'\n'<<"->";
                             else if (strAux.empty())
-                                cout<<"No puede dejar el nombre en blanco, intente de nuevo"<<'\n'<<"->";
+                                cout<<"No puede dejar el cargo en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(!isAlphabeticOrSpace(strAux) || strAux.empty());
                         emp.setCargo(strAux);
 
                         //Captura de edad
-                        cout << "Ingrese el la edad de "<< nombreEmpleadoAlta << '\n' << "->";
+                        cout << "Ingrese la edad de "<< nombreEmpleadoAlta << '\n' << "->";
                         do{
                             cin >> strAux;
+                            numAux = stoi(strAux);
                             if (!isNumeric(strAux))
                                 cout<<"No se permiten caracteres alfabéticos, intente de nuevo"<<'\n'<<"->";
+                            else if (numAux < 16)
+                                cout << "No se permiten edades menores a 16, intente de nuevo" << '\n' << "->";
                             else if (strAux.empty())
                                 cout<<"No puede dejar la edad en blanco, intente de nuevo"<<'\n'<<"->";
-                        }while(!isNumeric(strAux) || strAux.empty());
+                        }while(!isNumeric(strAux) || strAux.empty() || numAux < 16);
                         emp.setEdad(stoi(strAux));
 
                         //Captura de sueldo
@@ -178,13 +189,15 @@ public:
                                 /* Si el día seleccionado es mayor al valor correspondiente del mes seleccionado, la bandera de fecha válida
                                   no se hace verdadera y la fecha de contratación debe capturarse de nuevo */
                                 if(it->second < diaAux){
+                                    cout<<it->second<<'\n';
+                                    cout<<diaAux<<'\n';
                                     cout << "El número de día seleccionado es mayor al número de días totales del mes seleccionado, intente de nuevo"<<'\n';
                                 }else{
                                     // En caso de que el valor del mapa no sea mayor, entonces la fecha es válida y se hace verdadera la bandera
                                     valid = true;
                                 }
                             }
-                        }while(valid);
+                        }while(!valid);
                         emp.setFechaDeContratacionDia(diaAux);
                         emp.setFechaDeContratacionMes(mesAux);
                         emp.setFechaDeContratacionAnio(anioAux);
@@ -192,6 +205,31 @@ public:
                         empleadosFile.addData(emp);
                         break;
                     case 2: // Eliminar
+                        // Captura de DNI
+                        cout << "Ingrese DNI de nueve dígitos" << '\n' << "->";
+                        do {
+                            cin.ignore();
+                            // Se captura el DNI en el string auxiliar
+                            getline(cin,strAux,'\n');
+                            if (strAux.length() != 9)
+                                cout << "Longitud inválida, intente de nuevo" << '\n' << "->";
+                            else if (!isAlphanumeric(strAux))
+                                cout << "Debe contener solamente caracteres numéricos, intente de nuevo" << '\n'<< "->";
+                            else if (strAux.empty())
+                                cout<<"No puede dejar el DNI en blanco, intente de nuevo"<<'\n'<<"->";
+                        }while(strAux.length() != 9 || !isAlphanumeric(strAux) || strAux.empty());
+                        if(!empleadosFile.checkForExistance(strAux)){
+                            cout<<"No existe un empleado con ese DNI"<<'\n';
+                            break;
+                        }else{
+                            empleadosFile.delData(strAux);
+                            // Se agrega el índice del empleado eliminado a la lista de disponibles
+                            disponiblesFile.pushDisp(empleadosFile.getIndex());
+                            disponiblesFile.listToFile();
+                        }
+                        break;
+                    case 3: // Buscar por DNI
+                        // Captura de DNI
                         // Captura de DNI
                         cout << "Ingrese DNI de nueve dígitos" << '\n' << "->";
                         do {
@@ -203,11 +241,17 @@ public:
                                 cout << "Debe contener solamente caracteres numéricos, intente de nuevo" << '\n'
                                      << "->";
                         }while(strAux.length() != 9 || !isAlphanumeric(strAux));
-                        empleadosFile.delData(strAux);
-                        break;
-                    case 3: // Buscar por DNI
+                        if(!empleadosFile.checkForExistance(strAux)) {
+                            cout << "No existe un empleado con ese DNI" << '\n';
+                            break;
+                        }else{
+                            // Se imprime el empleado encontrado
+                            empleadosFile.findDataByDni(strAux);
+                        }
                         break;
                     case 4: // Generar lista de disponibles
+                        // Se imprime la lista de disponibles
+                        disponiblesFile.printList();
                         break;
                     case 5: // Salir
                         break;

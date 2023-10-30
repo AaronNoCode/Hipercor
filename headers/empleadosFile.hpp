@@ -9,32 +9,41 @@
 using namespace std;
 class EmpleadosFile{
 private:
-    string fileDir;
+    string empleadosFileDir;
     string auxDir;
     list<Empleado> empleadosList;
+    int index;
 public:
     EmpleadosFile() {
-        fileDir = "backups/EMPLEADOS.txt";
+        empleadosFileDir = "backups/EMPLEADOS.txt";
         auxDir = "backups/AUX.txt";
     }
-    void addData(Empleado &empl){
-        ofstream ofs(fileDir, ios::out | ios::app);
+    void addData(Empleado empl){
+        ofstream ofs(empleadosFileDir, ios::out | ios::app);
         if(!ofs.is_open())
             throw ios::failure("Archivo no encontrado");
         empleadosList.push_back(empl);
         listToFile();
     }
     void delData(string dni) {
-        fstream fs(fileDir, ios::in | ios::out);
+        index = 0;
+        for (auto const &iterator : empleadosList){
+            if (iterator.getDni() == dni)
+                break;
+            else {
+                index++;
+            }
+        }
+        fstream fsEmpleadosFile(empleadosFileDir, ios::in | ios::out);
         string line;
-        if (!fs.is_open())
+        if (!fsEmpleadosFile.is_open())
             throw ios::failure("Archivo no encontrado");
-        ofstream ofs(auxDir, ios::out | ios::trunc);
-        while (getline(fs, line, '\n')) {
+        ofstream ofsAux(auxDir, ios::out | ios::trunc);
+        while (getline(fsEmpleadosFile, line, '\n')) {
             stringstream iss(line);
             Empleado empleadoAux;
             iss >> empleadoAux;
-
+            empleadoAux.popBackDni();
             if (dni == empleadoAux.getDni()) {
                 if(empleadoAux.getDni()[0] == '*'){
                     cout<<"Ya está eliminado lógicamente"<<'\n';
@@ -45,20 +54,28 @@ public:
                 }
                 iss.str(line);
             }
-            ofs << line <<'\n';
+
+            ofsAux << line << '\n';
         }
-        fs.close();
-        ofs.close();
+        fsEmpleadosFile.close();
+        ofsAux.close();
         // AUX.txt se convierte en el archivo principal
-        remove(fileDir.c_str());
-        rename("backups/AUX.txt", fileDir.c_str());
+        remove(empleadosFileDir.c_str());
+        rename("backups/AUX.txt", empleadosFileDir.c_str());
+    }
+    bool checkForExistance(string &dni){
+        for (auto const &iterator : empleadosList){
+            if (iterator.getDni() == dni)
+                return true;
+        }
+        return false;
     }
     void findDataByDni(string dni){
         int index = 0; //0
         for (auto const &iterator : empleadosList){
             if(iterator.getDni() == dni){
                 string line;
-                ifstream fs(fileDir,ios::in);
+                ifstream fs(empleadosFileDir, ios::in);
                 do{
                     getline(fs,line,'\n');
                     index--;
@@ -72,8 +89,11 @@ public:
             }
         }
     }
+    int getIndex() const{
+        return index;
+    }
     void listToFile(){
-        ofstream ofs(fileDir, ios::out | ios::trunc);
+        ofstream ofs(empleadosFileDir, ios::out | ios::trunc);
         if(!ofs.is_open())
             throw ios::failure("Archivo no encontrado");
         for (auto &iterator : empleadosList){
@@ -82,7 +102,7 @@ public:
         ofs.close();
     }
     void fileToList(){
-        ifstream ifs(fileDir, ios::in);
+        ifstream ifs(empleadosFileDir, ios::in);
         Empleado empleadoAux;
         string line;
         if(!ifs.is_open())

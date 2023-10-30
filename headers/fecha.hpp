@@ -49,7 +49,16 @@ public:
     }
 
     string toString() const{
-        return to_string(getDia()) + '/' + to_string(getMes()) + '/' + to_string(getAnio());
+        string diaFinal, mesFinal;
+        if(getDia() < 10)
+            diaFinal = "0" + to_string(getDia());
+        else
+            diaFinal = to_string(getDia());
+        if(getMes() < 10)
+            mesFinal = "0" + to_string(getMes());
+        else
+            mesFinal = to_string(getMes());
+        return diaFinal + '/' + mesFinal + '/' + to_string(getAnio());
     }
 
     friend ofstream &operator << (ofstream &ofs, Fecha &f){

@@ -1,6 +1,7 @@
 // ! Los disponibles que se vayan agregando se deben pushear al frente para que se
 // ! muestren después del -1
-
+#ifndef DISPONIBLESFILE_HPP
+#define DISPONIBLESFILE_HPP
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -18,9 +19,9 @@ public:
         dispDir = "backups/LIST_DISP.txt";
         // Al principio se pushea -1 para indicar el fin de la lista de disponibles
         disponiblesList.push_front(-1);
-        disponiblesList.push_front(9);
-        disponiblesList.push_front(2);
-        disponiblesList.push_front(0);
+    }
+    void pushDisp(int num){
+        disponiblesList.push_front(num);
     }
     // Método exclusivo para mostrar en consola la lista
     void printList(){
@@ -30,6 +31,7 @@ public:
             if(iterator != disponiblesList.back())
                 cout<<"->";
         }
+        cout<<'\n';
     }
     void listToFile(){
         ofstream ofs(dispDir, ios::out | ios::trunc);
@@ -54,3 +56,4 @@ public:
         }
     }
 };
+#endif //DISPONIBLESFILE_HPP

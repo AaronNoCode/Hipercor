@@ -25,7 +25,7 @@ private:
     map<short,char> dniCanon;
 public:
     Empleado(string dni, string nombre, string cargo, short edad, float sueldo,Fecha fechaDeContratacion){
-        this->dni = generateDni(dni);
+        this->dni = formaCanonDni(dni);
         this->nombre = nombre;
         this->cargo = cargo;
         this->edad = edad;
@@ -110,7 +110,7 @@ public:
     }
     
     void setDni(const string &dni) {
-        this->dni = dni;
+        this->dni = formaCanonDni(dni);
     }
     void setNombre(const string &nombre) {
         this->nombre = nombre;
@@ -138,17 +138,21 @@ public:
         this->fechaDeContratacion.setAnio(anio);
     }
 
-    string generateDni(string &dniCrudo){
+    string formaCanonDni(const string &dniCrudo){
         return dniCrudo + (dniCanon[stoi(dniCrudo) % 23]);
     }
-    string toUpperName() const{
+    void popBackDni(){
+        if(this->dni.length() != 9)
+            this->dni.pop_back();
+    }
+    string toMayusName() const{
         string uppercase = getNombre();
         for(char &c : uppercase)
             c = toupper(c);
         return uppercase;
     }
 
-    string toUpperCharge() const{
+    string toMayusCharge() const{
         string uppercase = getCargo();
         for(char &c : uppercase)
             c = toupper(c);
@@ -228,7 +232,7 @@ public:
     }
 
     friend ofstream &operator << (ofstream &ofs, Empleado &empl) {
-        ofs << empl.dni << '|' << empl.toUpperName() << '|' << empl.toUpperCharge() << '|' << '$'<<empl.exitFormatSueldo() << '|' << empl.getFechaDeContratacionString();
+        ofs << empl.dni << '|' << empl.toMayusName() << '|' << empl.toMayusCharge() << '|' << '$' << empl.exitFormatSueldo() << '|' << empl.getFechaDeContratacionString();
         return ofs;
     }
     friend istream &operator >> (istream &ifs, Empleado &empl){
@@ -260,5 +264,6 @@ public:
     }
 
     friend class EmpleadosFile;
+    friend class MenuPrincipal;
 };
 #endif
