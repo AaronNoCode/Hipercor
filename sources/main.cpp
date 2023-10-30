@@ -4,44 +4,21 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
-#include <algorithm>
-#include "../headers/empleado.hpp"
+#include <map>
 #include "../headers/empleadosFile.hpp"
-
+#include "../headers/disponiblesFile.hpp"
 using namespace std;
-void menuPrincipal(){
-    short opcion;
-    do{
-        system("cls");
-        cout << "\t.:Menu principal:.\n1.-Agregar\n2.-Eliminar\n3.-Buscar por DNI\n4.-Generar lista de disponibles\n5.-Salir\n->";
-        cin >> opcion;
-        switch(opcion){
-            case 1: // Agregar
-                break;
-            case 2: // Eliminar
-                break;
-            case 3: // Buscar por DNI
-                break;
-            case 4: // Generar lista de disponibles
-                break;
-            case 5: // Salir
-                break;
-            default:
-                cout<<"Opción inválida\n";
-                }
-    }while(opcion != 5);
-}
 
 int main(){
-    Empleado e;
+    /*Empleado e;
     EmpleadosFile empleadoFile;
     string dni = "63920323";
     Empleado e1, e2, e3;
     e1.setDni("43920323");
     e2.setDni("53920323");
     e3.setDni("63920323");
-    e1.setNombre("Jorge");
-    e2.setNombre("Jorge");
+    e1.setNombre("Jorge hjkgl");
+    e2.setNombre("Jorge hj");
     e3.setNombre("Jorge");
     e1.setCargo("Jefe");
     e2.setCargo("Jefe");
@@ -58,8 +35,10 @@ int main(){
     empleadoFile.addData(e1);
     empleadoFile.addData(e2);
     empleadoFile.addData(e3);
-
-    empleadoFile.delData("63920323");
-    /*menuPrincipal();*/
+    empleadoFile.delData("53920323");
+    empleadoFile.findDataByDni("53920323");*/
+    /*DisponiblesFile df;
+    df.fileToList();*/
+    menuPrincipal();
     return 0;
 }
