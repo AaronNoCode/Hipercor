@@ -11,7 +11,6 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-#include <cstdlib>
 #include "../headers/empleado.hpp"
 #include "../headers/empleadosFile.hpp"
 #include "../headers/disponiblesFile.hpp"
@@ -58,8 +57,6 @@ public:
           empleadosFile.addData(Empleado("12345678C","Pablo","Cajero",20,500,Fecha(1,1,2020))); */
         opcion = 0;
             do{
-                // Se limpia la consola cada vuelta
-                system("clear");
                 // Display de opciones
                 cout << "\t.:Menu principal:.\n1.-Agregar\n2.-Eliminar\n3.-Buscar por DNI\n4.-Generar lista de disponibles\n5.-Salir\n->";
                 // Leer opción desde consola
