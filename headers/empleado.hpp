@@ -1,3 +1,10 @@
+/*ESTRUCTURAS DE DATOS II
+  SECCION D03
+  GRACIELA LARA LOPEZ
+  217782851 Ernesto Ariel Garcia Serna
+  218169878 Omar Alejandro Quiroz Trujillo
+  219550494 Cesar Aaron Perez Ramirez */
+
 #ifndef EMPLEADO_HPP
 #define EMPLEADO_HPP
 
@@ -11,9 +18,6 @@
 #include <map>
 #include "fecha.hpp"
 using namespace std;
-//if(m.find(s1)!=m.end()){
-//      if the element is found before the end of the map
-//      cout<<" : found : Value : "<<m[s1]<<endl;
 class Empleado{
 private:
     string dni;
@@ -21,10 +25,13 @@ private:
     string cargo;
     short edad;
     float sueldo;
+    // Fecha es una clase aparte ya que necesita su propio formateo
     Fecha fechaDeContratacion;
+    // Mapa para el cálculo de la letra del DNI
     map<short,char> dniCanon;
 public:
     Empleado(string dni, string nombre, string cargo, short edad, float sueldo,Fecha fechaDeContratacion){
+        // Se le da formato al DNI
         this->dni = formaCanonDni(dni);
         this->nombre = nombre;
         this->cargo = cargo;
@@ -57,6 +64,7 @@ public:
                 {22,'E'}
         };
     }
+    // Se inicializan todas las variables por buena praxis
     Empleado(){
         this->dni = "";
         this->nombre = "";
@@ -90,6 +98,7 @@ public:
                 {22,'E'}
         };
     }
+    // Getters para cada atributo
     string getDni() const {
         return this->dni;
     }
@@ -108,7 +117,7 @@ public:
     string getFechaDeContratacionString() const {
         return this->fechaDeContratacion.toString();
     }
-    
+    // Setters para cada atributo
     void setDni(const string &dni) {
         this->dni = formaCanonDni(dni);
     }
@@ -124,10 +133,7 @@ public:
     void setSueldo(float sueldo) {
         this->sueldo = sueldo;
     }
-    // TODO DELETE THIS
-    void setFechaDeContratacion(const Fecha &fechaDeContratacion) {
-        this->fechaDeContratacion = fechaDeContratacion;
-    }
+    // Se separan las funciones para el setter de la fecha para seguir con el esquema de getters y setters
     void setFechaDeContratacionDia(short dia) {
         this->fechaDeContratacion.setDia(dia);
     }
@@ -137,41 +143,56 @@ public:
     void setFechaDeContratacionAnio(int anio) {
         this->fechaDeContratacion.setAnio(anio);
     }
-
+    // Función para darle formato al DNI
     string formaCanonDni(const string &dniCrudo){
+        /* Conforme a la fórmula indicada, se calcula la letra del DNI transformando
+           el string a int y luego calculando su módulo 23 para pasarlo a la función que retorna la letra para
+           formar la forma canónica completa del DNI */
         return dniCrudo + (dniCanon[stoi(dniCrudo) % 23]);
     }
+    // Función para eliminar el último caracter del DNI (se repite la última letra)
     void popBackDni(){
         if(this->dni.length() != 9)
             this->dni.pop_back();
     }
+    // Función para darle formato de salida al nombre
     string toMayusName() const{
         string uppercase = getNombre();
         for(char &c : uppercase)
             c = toupper(c);
         return uppercase;
     }
-
+    // Función para darle formato de salida al cargo
     string toMayusCharge() const{
         string uppercase = getCargo();
         for(char &c : uppercase)
             c = toupper(c);
         return uppercase;
     }
+    // Función para saber si el sueldo tiene decimales
     bool tieneDecimales() const{
         return this->getSueldo() != static_cast<int>(this->getSueldo());
     }
+    // Función para darle formato de salida al sueldo
     string putCommas(string numero) const{
         string decimales;
+        // Se separan los decimales del número volteando la cadena y tomando los primeros dos caracteres (los decimales)
         reverse(numero.begin(), numero.end());
+        // Se guardan los decimales en una variable aparte
         decimales = numero.substr(0,2);
+        // Se vuelve a voltear la cadena de decimales para que quede en el orden correcto
         reverse(decimales.begin(),decimales.end());
+        // Se eliminan los decimales del número
         numero = numero.substr(3);
+        // Se insertan comas cada 3 caracteres empezando desde el final
         for(auto i = 3; i < numero.length(); i+=4)
             numero.insert(i,",");
+        // Se vuelve a voltear el número para que quede en el orden correcto
         reverse(numero.begin(),numero.end());
+        // Se retorna el número completo con enteros y decimales
         return numero + '.' + decimales;
     }
+    // Función para darle formato de salida al sueldo incluyendo el signo de pesos
     string exitFormatSueldo() const{
         /* Hacemos uso de un stringstream para poder formatear los datos de una forma
            más específica que sólo convirtiendo el número a string con to_string */
@@ -211,7 +232,7 @@ public:
         // Retorna el sueldo ya formateado para salida a archivo
 
     }
-
+    // Sobrecarga de operadores para poder comparar empleados por DNI (pensando en escalabilidad del programa)
     bool operator==(const Empleado &empl) const {
         return dni == empl.dni;
     }
@@ -230,14 +251,15 @@ public:
     bool operator >= (Empleado &empl) const {
         return dni >= empl.dni;
     }
-
+    // Sobrecarga de operadores para poder imprimir empleados en consola y en archivo
     friend ofstream &operator << (ofstream &ofs, Empleado &empl) {
+        // Todos los atributos salen con su formato correspondiente
         ofs << empl.dni << '|' << empl.toMayusName() << '|' << empl.toMayusCharge() << '|' << '$' << empl.exitFormatSueldo() << '|' << empl.getFechaDeContratacionString();
         return ofs;
     }
     friend istream &operator >> (istream &ifs, Empleado &empl){
         string dni, nombre, cargo, sueldo, diaStr, mesStr, anioStr;
-
+        // Se usa getline para poder leer hasta el delimitador correspondiente de cada atributo
         getline(ifs, dni,'|');
         empl.setDni(dni);
         getline(ifs, nombre, '|');

@@ -1,8 +1,17 @@
+/*ESTRUCTURAS DE DATOS II
+  SECCION D03
+  GRACIELA LARA LOPEZ
+  217782851 Ernesto Ariel Garcia Serna
+  218169878 Omar Alejandro Quiroz Trujillo
+  219550494 Cesar Aaron Perez Ramirez */
+
 #ifndef MENU_HPP
 #define MENU_HPP
+
 #include <map>
 #include <iostream>
 #include <algorithm>
+#include <cstdlib>
 #include "../headers/empleado.hpp"
 #include "../headers/empleadosFile.hpp"
 #include "../headers/disponiblesFile.hpp"
@@ -19,6 +28,7 @@ static bool isAlphabethicCharacterOrSpace(char c){
 
 class MenuPrincipal{
 private:
+    // Al ser la clase principal, es la que contiene a las dos clases más como variables
     DisponiblesFile disponiblesFile;
     EmpleadosFile empleadosFile;
     // Opción del menú
@@ -49,7 +59,7 @@ public:
         opcion = 0;
             do{
                 // Se limpia la consola cada vuelta
-                system("cls");
+                system("clear");
                 // Display de opciones
                 cout << "\t.:Menu principal:.\n1.-Agregar\n2.-Eliminar\n3.-Buscar por DNI\n4.-Generar lista de disponibles\n5.-Salir\n->";
                 // Leer opción desde consola
@@ -71,6 +81,7 @@ public:
                         do {
                             // Se captura el DNI en el string auxiliar
                             cin >> strAux;
+                            // cin.ignore() para limpiar el buffer de entrada
                             cin.ignore();
                             if (strAux.length() != 8)
                                 cout << "Longitud inválida, intente de nuevo" <<'\n'<<"->";
@@ -79,6 +90,7 @@ public:
                             else if(strAux.empty())
                                 cout<<"No puede dejar el DNI en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(strAux.length() != 8 || !isNumeric(strAux));
+                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
                         emp.setDni(strAux);
 
                         //Captura de nombre
@@ -90,6 +102,7 @@ public:
                             else if (strAux.empty())
                                 cout<<"No puede dejar el nombre en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(!isAlphabeticOrSpace(strAux) || strAux.empty());
+                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
                         emp.setNombre(strAux);
                         nombreEmpleadoAlta = strAux;
 
@@ -102,6 +115,7 @@ public:
                             else if (strAux.empty())
                                 cout<<"No puede dejar el cargo en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(!isAlphabeticOrSpace(strAux) || strAux.empty());
+                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
                         emp.setCargo(strAux);
 
                         //Captura de edad
@@ -116,6 +130,7 @@ public:
                             else if (strAux.empty())
                                 cout<<"No puede dejar la edad en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(!isNumeric(strAux) || strAux.empty() || numAux < 16);
+                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
                         emp.setEdad(stoi(strAux));
 
                         //Captura de sueldo
@@ -127,6 +142,7 @@ public:
                             else if (strAux.empty())
                                 cout<<"No puede dejar el nombre en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(!isNumericOrPoint(strAux) || strAux.empty());
+                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
                         emp.setSueldo(stof(strAux));
 
                         //Captura de fecha de contratación
@@ -198,16 +214,18 @@ public:
                                 }
                             }
                         }while(!valid);
+                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
                         emp.setFechaDeContratacionDia(diaAux);
                         emp.setFechaDeContratacionMes(mesAux);
                         emp.setFechaDeContratacionAnio(anioAux);
-                        // Se agrega el empleado al archivo
+                        // Se agrega el empleado al archivo ya que tiene todos sus campos completos
                         empleadosFile.addData(emp);
                         break;
                     case 2: // Eliminar
                         // Captura de DNI
                         cout << "Ingrese DNI de nueve dígitos" << '\n' << "->";
                         do {
+                            // Limpia el buffer
                             cin.ignore();
                             // Se captura el DNI en el string auxiliar
                             getline(cin,strAux,'\n');
@@ -218,10 +236,12 @@ public:
                             else if (strAux.empty())
                                 cout<<"No puede dejar el DNI en blanco, intente de nuevo"<<'\n'<<"->";
                         }while(strAux.length() != 9 || !isAlphanumeric(strAux) || strAux.empty());
+                        // Checa si existe el registro en la lista de empleados
                         if(!empleadosFile.checkForExistance(strAux)){
                             cout<<"No existe un empleado con ese DNI"<<'\n';
                             break;
                         }else{
+                            // Si el empleado existe
                             empleadosFile.delData(strAux);
                             // Se agrega el índice del empleado eliminado a la lista de disponibles
                             disponiblesFile.pushDisp(empleadosFile.getIndex());
@@ -256,10 +276,14 @@ public:
                     case 5: // Salir
                         break;
                     default:
-                        cout<<"Opción inválida\n";
+                        cout<<"Opción inválida, intente de nuevo\n->";
                 }
             }while(opcion != 5);
         }
+    /* Funciones para comprobar si una cadena es numérica, alfabética, alfanumérica, etc.
+       Nótese que se usan las funciones estáticas en el principio de este código */
+    /* Se usa all_of para checar si todos los caracteres de la cadena son numéricos
+       y el tercer argumento de dicha función es un protocolo personalizado para hacer la comprobación*/
     bool isNumericOrPoint(const string &str){
         return all_of(str.begin(),str.end(),isNumericOrPointChar);
     }
