@@ -11,9 +11,9 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-#include "../headers/empleado.hpp"
-#include "../headers/empleadosFile.hpp"
-#include "../headers/disponiblesFile.hpp"
+#include "empleado.hpp"
+#include "empleadosFile.hpp"
+#include "disponiblesFile.hpp"
 using namespace std;
 
 /* Estas dos funcione son estáticas porque no necesitan acceder a ningún atributo de la clase
@@ -50,12 +50,7 @@ private:
 public:
     MenuPrincipal(){
         // Se inicializa a cero por buena praxis (no es bueno tener variables sin inicializar)
-        /* No es posible hardcodear las opciones ya que se cargan los dni con un caracter nulo al final
-           y no se puede comparar con un dni puesto a mano
-          empleadosFile.addData(Empleado("12345678A","Juan","Gerente",25,1000,Fecha(1,1,2020)));
-          empleadosFile.addData(Empleado("87654321B","Pedro","Cajero",20,500,Fecha(1,1,2020)));
-          empleadosFile.addData(Empleado("12345678C","Pablo","Cajero",20,500,Fecha(1,1,2020))); */
-        opcion = 0;
+          opcion = 0;
             do{
                 // Display de opciones
                 cout << "\t.:Menu principal:.\n1.-Agregar\n2.-Eliminar\n3.-Buscar por DNI\n4.-Generar lista de disponibles\n5.-Salir\n->";
@@ -73,26 +68,12 @@ public:
                 // Switch para cada opción
                 switch(opcion){
                     case 1: // + Agregar
-                        // Captura de DNI
-                        cout << "Ingrese DNI de ocho dígitos" << '\n' << "->";
-                        do {
-                            // Se captura el DNI en el string auxiliar
-                            cin >> strAux;
-                            // cin.ignore() para limpiar el buffer de entrada
-                            cin.ignore();
-                            if (strAux.length() != 8)
-                                cout << "Longitud inválida, intente de nuevo" <<'\n'<<"->";
-                            else if (!isNumeric(strAux))
-                                cout << "Debe contener solamente caracteres numéricos, intente de nuevo"<<'\n'<<"->";
-                            else if(strAux.empty())
-                                cout<<"No puede dejar el DNI en blanco, intente de nuevo"<<'\n'<<"->";
-                        }while(strAux.length() != 8 || !isNumeric(strAux));
-                        // Ya que se hicieron las comprobaciones, se puede asignar al empleado
-                        emp.setDni(strAux);
-
+                        // Captura de DNI, el método está contenid en la función
+                        emp.generarDni();
                         //Captura de nombre
                         cout << "Ingrese nombre incluyendo nombres y apellidos" << '\n' << "->";
                         do{
+                            cin.ignore();
                             getline(cin,strAux,'\n');
                             if (!isAlphabeticOrSpace(strAux))
                                 cout<<"No se permiten caracteres numéricos, intente de nuevo"<<'\n'<<"->";
@@ -215,6 +196,7 @@ public:
                         emp.setFechaDeContratacionDia(diaAux);
                         emp.setFechaDeContratacionMes(mesAux);
                         emp.setFechaDeContratacionAnio(anioAux);
+                        cout<<"Empleado dado de alta con DNI: "<<emp.getDni()<<'\n';
                         // Se agrega el empleado al archivo ya que tiene todos sus campos completos
                         empleadosFile.addData(emp);
                         break;

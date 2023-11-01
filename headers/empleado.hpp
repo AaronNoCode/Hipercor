@@ -16,6 +16,7 @@
 #include <cmath>
 #include <algorithm>
 #include <map>
+#include <random>
 #include "fecha.hpp"
 using namespace std;
 class Empleado{
@@ -28,17 +29,16 @@ private:
     // Fecha es una clase aparte ya que necesita su propio formateo
     Fecha fechaDeContratacion;
     // Mapa para el cálculo de la letra del DNI
-    map<short,char> dniCanon;
+    map<int,char> diccionarioLetrasDNI;
 public:
-    Empleado(string dni, string nombre, string cargo, short edad, float sueldo,Fecha fechaDeContratacion){
-        // Se le da formato al DNI
-        this->dni = formaCanonDni(dni);
+    Empleado(string nombre, string cargo, short edad, float sueldo,Fecha fechaDeContratacion){
+        generarDni();
         this->nombre = nombre;
         this->cargo = cargo;
         this->edad = edad;
         this->sueldo = sueldo;
         this->fechaDeContratacion = fechaDeContratacion;
-        this->dniCanon = {
+        this->diccionarioLetrasDNI = {
                 {0,'T'},
                 {1,'R'},
                 {2,'W'},
@@ -72,7 +72,7 @@ public:
         this->edad = 0;
         this->sueldo = 0;
         this->fechaDeContratacion = Fecha();
-        this->dniCanon = {
+        this->diccionarioLetrasDNI = {
                 {0,'T'},
                 {1,'R'},
                 {2,'W'},
@@ -118,8 +118,24 @@ public:
         return this->fechaDeContratacion.toString();
     }
     // Setters para cada atributo
-    void setDni(const string &dni) {
-        this->dni = formaCanonDni(dni);
+    void generarDni() {
+        // String auxiliar para ir guardando los números cuando se generen
+        int dniNumero;
+        // Obtiene un número aleatorio del hardware
+        random_device rd;
+        // Semilla para el generador Marsenne Twister generado con el número aleatorio del hardware
+        mt19937 eng(rd());
+        // Define el rango del número deseado en la distribución
+        uniform_int_distribution<>distr(10000000,99999999);
+        // Se asigna el número aleatorio usando la distribución y como argumento el número aleatorio
+        dniNumero = distr(eng);
+        /* Acorde al proceso canónico de generar el DNI, se concatena el número aleatorio generado
+           convertido a string con la letra asociada en el diccionario obtenida de el número aleatorio módulo 23
+           y se asigna al atributo de DNI del empleado */
+        this->dni = to_string(dniNumero) + diccionarioLetrasDNI[dniNumero % 23];
+    }
+    void setDNI(const string &dni){
+        this->dni = dni;
     }
     void setNombre(const string &nombre) {
         this->nombre = nombre;
@@ -143,17 +159,19 @@ public:
     void setFechaDeContratacionAnio(int anio) {
         this->fechaDeContratacion.setAnio(anio);
     }
-    // Función para darle formato al DNI
-    string formaCanonDni(const string &dniCrudo){
-        /* Conforme a la fórmula indicada, se calcula la letra del DNI transformando
-           el string a int y luego calculando su módulo 23 para pasarlo a la función que retorna la letra para
-           formar la forma canónica completa del DNI */
-        return dniCrudo + (dniCanon[stoi(dniCrudo) % 23]);
-    }
-    // Función para eliminar el último caracter del DNI (se repite la última letra)
-    void popBackDni(){
-        if(this->dni.length() != 9)
-            this->dni.pop_back();
+    string toString(){
+        string totalNombre, totalCargo, totalSueldo;
+        totalNombre = toMayusName();
+        for(auto i = 0;i < 25-toMayusName().length();i++)
+            totalNombre += " ";
+        totalCargo = toMayusCharge();
+        for(auto i = 0;i < 10-toMayusCharge().length();i++)
+            totalCargo += " ";
+        totalSueldo = exitFormatSueldo();
+        for(auto i = 0;i < 10-exitFormatSueldo().length();i++)
+            totalSueldo += " ";
+        cout<<getDni() + "|" + totalNombre + "|" + totalCargo + "|" + "$" + totalSueldo + "|" + getFechaDeContratacionString();
+        return getDni() + "|" + totalNombre + "|" + totalCargo + "|" + "$" + totalSueldo + "|" + getFechaDeContratacionString();
     }
     // Función para darle formato de salida al nombre
     string toMayusName() const{
@@ -230,7 +248,7 @@ public:
             return final;
         }
         // Retorna el sueldo ya formateado para salida a archivo
-
+        return "nothing";
     }
     // Sobrecarga de operadores para poder comparar empleados por DNI (pensando en escalabilidad del programa)
     bool operator==(const Empleado &empl) const {
@@ -251,17 +269,20 @@ public:
     bool operator >= (Empleado &empl) const {
         return dni >= empl.dni;
     }
-    // Sobrecarga de operadores para poder imprimir empleados en consola y en archivo
+    // Sobrecarga de operador de salida para formatear cómo se muestran en el archivo con sus separaciones
     friend ofstream &operator << (ofstream &ofs, Empleado &empl) {
         // Todos los atributos salen con su formato correspondiente
-        ofs << empl.dni << '|' << empl.toMayusName() << '|' << empl.toMayusCharge() << '|' << '$' << empl.exitFormatSueldo() << '|' << empl.getFechaDeContratacionString();
+        ofs << empl.getDni() + "|" + empl.toMayusName() + "|" + empl.toMayusCharge() + "|" + "$" + empl.exitFormatSueldo() + "|" + empl.getFechaDeContratacionString();
         return ofs;
     }
+    // Operador de entrada para leer cada atributo del empleado y asignarlo
     friend istream &operator >> (istream &ifs, Empleado &empl){
         string dni, nombre, cargo, sueldo, diaStr, mesStr, anioStr;
-        // Se usa getline para poder leer hasta el delimitador correspondiente de cada atributo
+        // Se usa getline para poder leer hasta el delimitador del DNI
         getline(ifs, dni,'|');
-        empl.setDni(dni);
+        // DNI se pobla con el dni leído en la lína anterior
+        empl.setDNI(dni);
+        // Getline para leer el campo de nombre y
         getline(ifs, nombre, '|');
         empl.setNombre(nombre);
         getline(ifs, cargo, '|');

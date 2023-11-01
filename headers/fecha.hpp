@@ -16,14 +16,14 @@ class Fecha{
 private:
     short dia;
     short mes;
-    short anio;
+    int anio;
 public:
     Fecha(){
         this->dia = 0;
         this->mes = 0;
         this->anio = 0;
     }
-    Fecha(short dia, short mes, short anio){
+    Fecha(short dia, short mes, int anio){
         this->dia = dia;
         this->mes = mes;
         this->anio = anio;
@@ -35,7 +35,7 @@ public:
     void setMes(short num){
         this->mes = num;
     }
-    void setAnio(short num){
+    void setAnio(int num){
         this->anio = num;
     }
     // Getters
@@ -46,7 +46,7 @@ public:
     [[nodiscard]] short getMes() const{
         return this->mes;
     }
-    [[nodiscard]] short getAnio() const{
+    [[nodiscard]] int getAnio() const{
         return this->anio;
     }
     /* Método para darle formato de salida a la fecha
@@ -61,7 +61,7 @@ public:
             mesFinal = "0" + to_string(getMes());
         else
             mesFinal = to_string(getMes());
-        return diaFinal + '/' + mesFinal + '/' + to_string(getAnio());
+        return diaFinal + "/" + mesFinal + "/" + to_string(getAnio());
     }
     // Sobrecarga de operadores de entrada y salida de archivos
     friend ofstream &operator << (ofstream &ofs, Fecha &f){

@@ -12,7 +12,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-#include "../headers/empleado.hpp"
+#include "empleado.hpp"
 using namespace std;
 class EmpleadosFile{
 private:
@@ -27,7 +27,7 @@ public:
         empleadosFileDir = "backups/EMPLEADOS.txt";
         auxDir = "backups/AUX.txt";
     }
-    void addData(Empleado empl){
+    void addData(Empleado &empl){
         // Abre el archivo de empleados en modo append
         ofstream ofs(empleadosFileDir, ios::out | ios::app);
         // Si no se pudo abrir el archivo, lanza una excepción
@@ -36,7 +36,7 @@ public:
         // Hace push el empleado a la lista
         empleadosList.push_back(empl);
         // Escribe la lista en el archivo
-        listToFile();
+        ofs << empl.toString()<<'\n';
     }
     void delData(string dni) {
         // Este index sirve para la lista de disponibles
@@ -50,8 +50,8 @@ public:
                 index++;
             }
         }
-        // Abre el archivo de empleados en modo lectura y escritura
-        fstream fsEmpleadosFile(empleadosFileDir, ios::in | ios::out);
+        // Abre el archivo de empleados en modo lectura
+        ifstream fsEmpleadosFile(empleadosFileDir, ios::in);
         string line;
         // Si no se pudo abrir el archivo, lanza una excepción
         if (!fsEmpleadosFile.is_open())
@@ -64,8 +64,6 @@ public:
             Empleado empleadoAux;
             // Se lee la línea y se guarda en empleadoAux
             iss >> empleadoAux;
-            // Se elimina el último caracter del DNI (se repite la última letra)
-            empleadoAux.popBackDni();
             // Si el dni del empleadoAux es igual al dni del empleado que se quiere eliminar
             if (dni == empleadoAux.getDni()) {
                 // Si el DNI del empleadoAux ya tenía un * al principio, indica que ya estaba borrado anteriormente
