@@ -1,5 +1,5 @@
 # Hipercor
-Proyecto final EDII
+Versión final, no incluye hidratación de listas después de cerrar y abrir el programa.
 
 Esquema:
 
